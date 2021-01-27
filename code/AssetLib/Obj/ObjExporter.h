@@ -77,12 +77,14 @@ private:
         FaceVertex()
         : vp()
         , vn()
-        , vt() {
+        , vt()
+        , vtan()
+        , vbt() {
             // empty
         }
 
         // one-based, 0 means: 'does not exist'
-        unsigned int vp, vn, vt;
+        unsigned int vp, vn, vt, vtan, vbt;
     };
 
     struct Face {
@@ -111,7 +113,7 @@ private:
         aiColor3D vc; // OBJ does not support 4D color
     };
 
-    std::vector<aiVector3D> vn, vt;
+    std::vector<aiVector3D> vn, vt, vtan, vbt;
     std::vector<aiColor4D> vc;
     std::vector<vertexData> vp;
     bool useVc;
@@ -177,7 +179,7 @@ private:
         };
     };
 
-    indexMap<aiVector3D, aiVectorCompare> mVnMap, mVtMap;
+    indexMap<aiVector3D, aiVectorCompare> mVnMap, mVtMap, mVtanMap, mVbtMap;
     indexMap<vertexData, vertexDataCompare> mVpMap;
     std::vector<MeshInstance> mMeshes;
 

@@ -117,9 +117,13 @@ ObjExporter::ObjExporter(const char* _filename, const aiScene* pScene, bool noMt
 , vn()
 , vt()
 , vp()
+, vtan()
+, vbt()
 , useVc(false)
 , mVnMap()
 , mVtMap()
+, mVtanMap()
+, mVbtMap()
 , mVpMap()
 , mMeshes()
 , endl("\n") {
@@ -297,6 +301,21 @@ void ObjExporter::WriteGeometryFile(bool noMtl) {
     }
     mOutput << endl;
 
+    mVtanMap.getKeys(vtan);
+    mOutput << "# " << vtan.size() << " vertex tangents" << endl;
+    for (const aiVector3D &v : vtan) {
+        mOutput << "vtan " << v.x << " " << v.y << " " << v.z << endl;
+    }
+    mOutput << endl;
+
+    mVbtMap.getKeys(vbt);
+    mOutput << "# " << vbt.size() << " vertex bitangents" << endl;
+    for (const aiVector3D &v : vbt) {
+        mOutput << "vbt " << v.x << " " << v.y << " " << v.z << endl;
+    }
+    mOutput << endl;
+
+
     // now write all mesh instances
     for(const MeshInstance& m : mMeshes) {
         mOutput << "# Mesh \'" << m.name << "\' with " << m.faces.size() << " faces" << endl;
@@ -321,6 +340,12 @@ void ObjExporter::WriteGeometryFile(bool noMtl) {
                     }
                     if (f.kind == 'f' && fv.vn) {
                         mOutput << '/' << fv.vn;
+                    }
+                    if (f.kind == 'f' && fv.vtan) {
+                        mOutput << '/' << fv.vtan;
+                    }
+                    if (f.kind == 'f' && fv.vbt) {
+                        mOutput << '/' << fv.vbt;
                     }
                 }
             }
@@ -378,6 +403,20 @@ void ObjExporter::AddMesh(const aiString& name, const aiMesh* m, const aiMatrix4
                 face.indices[a].vn = mVnMap.getIndex(norm);
             } else {
                 face.indices[a].vn = 0;
+            }
+
+            if (m->mTangents) {
+                aiVector3D tangent = aiMatrix3x3(mat) * m->mTangents[idx];
+                face.indices[a].vtan = mVtanMap.getIndex(tangent);
+            } else {
+                face.indices[a].vtan = 0;
+            }
+
+            if (m->mBitangents) {
+                aiVector3D biTangent = aiMatrix3x3(mat) * m->mBitangents[idx];
+                face.indices[a].vbt = mVbtMap.getIndex(biTangent);
+            } else {
+                face.indices[a].vbt = 0;
             }
 
             if ( m->mTextureCoords[ 0 ] ) {
