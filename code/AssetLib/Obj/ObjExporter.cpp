@@ -280,7 +280,7 @@ void ObjExporter::WriteGeometryFile(bool noMtl) {
     } else {
         mOutput << "# " << vp.size() << " vertex positions and colors" << endl;
         for ( const vertexData& v : vp ) {
-            mOutput << "v  " << v.vp.x << " " << v.vp.y << " " << v.vp.z << " " << v.vc.r << " " << v.vc.g << " " << v.vc.b << endl;
+            mOutput << "v  " << v.vp.x << " " << v.vp.y << " " << v.vp.z << " " << v.vc.r << " " << v.vc.g << " " << v.vc.b << " " << v.vc.a << endl;
         }
     }
     mOutput << endl;
@@ -393,9 +393,9 @@ void ObjExporter::AddMesh(const aiString& name, const aiMesh* m, const aiMatrix4
 
             if ( nullptr != m->mColors[ 0 ] ) {
                 aiColor4D col4 = m->mColors[ 0 ][ idx ];
-                face.indices[a].vp = mVpMap.getIndex({vert, aiColor3D(col4.r, col4.g, col4.b)});
+                face.indices[a].vp = mVpMap.getIndex({vert, col4});
             } else {
-                face.indices[a].vp = mVpMap.getIndex({vert, aiColor3D(0,0,0)});
+                face.indices[a].vp = mVpMap.getIndex({vert, aiColor4D(0,0,0,0)});
             }
 
             if (m->mNormals) {

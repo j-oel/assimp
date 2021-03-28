@@ -110,7 +110,7 @@ private:
 
     struct vertexData {
         aiVector3D vp;
-        aiColor3D vc; // OBJ does not support 4D color
+        aiColor4D vc; // OBJ does not support 4D color - but this is an extension
     };
 
     std::vector<aiVector3D> vn, vt, vtan, vbt;
